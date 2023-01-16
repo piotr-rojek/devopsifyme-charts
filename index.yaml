@@ -3,13 +3,13 @@ entries:
   xinetd-port-forwarder:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2023-01-16T11:20:15.5993891+01:00"
+    created: "2023-01-16T11:29:35.1790647+01:00"
     description: Forwards ports on k8s node with xinetd, so they can be accessible
       from Windows WSL
     digest: 38cd8c340f8f20b7b914bd3e2d67dc098aa7e592be4b0946c8218ed5a78659e1
     name: xinetd-port-forwarder
     type: application
     urls:
-    - https://piotr-rojek.github.io/devopsify-charts/xinetd-port-forwarder-0.1.0.tgz
+    - https://piotr-rojek.github.io/devopsifyme-charts/xinetd-port-forwarder-0.1.0.tgz
     version: 0.1.0
-generated: "2023-01-16T11:20:15.5993891+01:00"
+generated: "2023-01-16T11:29:35.178457+01:00"
