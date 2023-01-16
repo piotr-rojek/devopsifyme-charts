@@ -1,0 +1,62 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "xinetd-port-forwarder.fullname" . }}
+  labels:
+    {{- include "xinetd-port-forwarder.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.cronjob.schedule }}
+  selector:
+    {{- include "xinetd-port-forwarder.selectorLabels" . | nindent 4 }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          {{- with .Values.podAnnotations }}
+          annotations:
+            {{- toYaml . | nindent 8 }}
+          {{- end }}
+        spec:
+          hostPID: {{ .Values.cronjob.hostPID }}
+          serviceAccountName: {{ include "xinetd-port-forwarder.serviceAccountName" . }}
+          securityContext: 
+            {{- toYaml .Values.podSecurityContext | nindent 12 }}
+          containers:
+          - name: {{ .Chart.Name }}
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            command:
+            - pwsh
+            - -File
+            - /etc/config/script.ps1
+            securityContext: 
+              {{- toYaml .Values.securityContext | nindent 14 }} 
+            resources: 
+              {{- toYaml .Values.resources | nindent 14 }}
+            volumeMounts:
+              - name: config
+                mountPath: /etc/config
+              - name: xinetd-config
+                mountPropagation: "Bidirectional"
+                mountPath: "/etc/xinetd.d"
+            {{- with .Values.nodeSelector }}
+            nodeSelector:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .Values.affinity }}
+            affinity:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            {{- with .Values.tolerations }}
+            tolerations:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+          volumes:
+            - name: config
+              configMap:
+                name: {{ include "xinetd-port-forwarder.fullname" . }}
+            - name: xinetd-config
+              hostPath:
+                path: /etc/xinetd.d
+                type: DirectoryOrCreate
+          restartPolicy: OnFailure

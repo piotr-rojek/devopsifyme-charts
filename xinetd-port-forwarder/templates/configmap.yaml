@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "xinetd-port-forwarder.fullname" . }}
+data:
+  script.ps1: |-
+{{ .Files.Get "assets/Update-XinetdConfig.ps1" | indent 4}}
